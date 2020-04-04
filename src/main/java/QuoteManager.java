@@ -36,7 +36,16 @@ public class QuoteManager {
      * @return
      */
     public Quote addQuote(int id, String quote, String from) {
+        try{
+            for(int i = 0; i < 10; i++){
+                quoteDao.create(new Quote(i,"quote: " + quote, "from " + from));
+            }
+        }
+        catch (SQLException sqle){
+        }
+
         return addQuote(new Quote(id, quote, from));
+
     }
 
     /**
@@ -49,7 +58,9 @@ public class QuoteManager {
      */
     public Quote addQuote(Quote quote) {
         // TODO
+
         return null;
+
     }
 
     /**
@@ -60,7 +71,19 @@ public class QuoteManager {
      */
     public List<Quote> getAllQuotes() {
         // TODO
+        try{
+            var allQuotes = quoteDao.queryForAll();
+            for(var quote : allQuotes){
+                System.out.println(quote);
+            }
+        }catch (QuoteException quoteException){
+
+        }
+        catch(SQLException sqle){
+
+        }
         return null;
+
     }
 
     /**
@@ -98,7 +121,20 @@ public class QuoteManager {
      */
     public Quote updateQuoteFrom(int id, String from) {
         // TODO
-        return null;
+        try{
+            if(quoteDao.idExists(id)){
+                var theFrom = quoteDao.queryForId(id);
+                quoteDao.update(new Quote(id,theFrom.getQuote(),from));
+                return quoteDao.queryForId(id);
+            }else{
+                throw new QuoteIdNotExistsException(id);
+            }
+        }
+        catch(SQLException e){
+            throw new QuoteException("Something happened on id check and update",e);
+
+        }
+
     }
 
     /**
@@ -111,6 +147,17 @@ public class QuoteManager {
      */
     public Quote deleteQuote(int id) {
         // TODO
+        try{
+            if(quoteDao.idExists(id)){
+                var theQuote = quoteDao.queryForId(id);
+                quoteDao.delete(theQuote);
+            }else{
+                throw new QuoteIdNotExistsException(id);
+            }
+        }
+        catch(SQLException e){
+            throw new QuoteException("Something happened on id check and update",e);
+        }
         return null;
     }
 
